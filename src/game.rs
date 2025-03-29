@@ -1,37 +1,28 @@
+#![allow(non_snake_case)]
+#![allow(dead_code)]
+
 pub mod board;
 pub mod playerController;
 mod utils;
 
 use std::io;
 
-use std::io::Write;
-use std::ptr::null;
+pub use crate::bot::bot::*;
+use rand::Rng;
 use std::thread::sleep;
 use std::time::Duration;
-use colored::Style;
-use rand::Rng;
-pub use crate::bot::{
-    bot::*,
-    level1::*,
-    level2::*,
-    level3::*,
-};
 use utils::*;
 
+use crate::randElm;
 pub use board::*;
 pub use playerController::*;
-use crate::randElm;
 
+use crossterm::style::Attribute;
 use crossterm::{
-    event::{self, Event, KeyCode, KeyEvent, KeyEventKind},
-    terminal::{self as term, ClearType},
-    ExecutableCommand,
     queue,
-    style::{Color, Print, ResetColor, SetForegroundColor, SetAttribute},
-    cursor,
+    style::{Color, Print, ResetColor, SetAttribute, SetForegroundColor},
 };
-use crossterm::style::{Attribute, SetStyle};
-use inquire::{Select};
+use inquire::Select;
 
 pub type Point = (usize, usize);
 
@@ -51,10 +42,10 @@ impl Player {
 
 pub struct TicTacToe {
     pub board: Box<Board>,
-    pub turn:  Player,
+    pub turn: Player,
 
     pub playerController: Controller,
-    pub currentBot:       usize,
+    pub currentBot: usize,
 
     pub bots: Vec<Bot>,
 }
@@ -63,11 +54,11 @@ impl TicTacToe {
     pub fn new(playerController: Controller) -> TicTacToe {
         return TicTacToe {
             board: Box::new(Board::new()),
-            turn:  Player::Player,
+            turn: Player::Player,
 
             playerController: playerController,
-            currentBot:       1,
-            bots:             Vec::new(),
+            currentBot: 1,
+            bots: Vec::new(),
         };
     }
 
@@ -76,8 +67,14 @@ impl TicTacToe {
     }
 
     pub fn menu(&mut self) {
-        let colors = [Color::Cyan, Color::Blue, Color::Green, Color::DarkGreen, Color::Red];
-        for i in (0..self.bots.len()) {
+        let colors = [
+            Color::Cyan,
+            Color::Blue,
+            Color::Green,
+            Color::DarkGreen,
+            Color::Red,
+        ];
+        for i in 0..self.bots.len() {
             queue!(
                 io::stdout(),
                 SetForegroundColor(colors[self.bots[i].level as usize]),
@@ -85,19 +82,23 @@ impl TicTacToe {
                 Print(format!("{} ", self.bots[i].name)),
                 SetAttribute(Attribute::Reset),
                 SetForegroundColor(colors[self.bots[i].level as usize]),
-                Print(format!("(level {}): {}", self.bots[i].level, self.bots[i].description)),
+                Print(format!(
+                    "(level {}): {}",
+                    self.bots[i].level, self.bots[i].description
+                )),
                 ResetColor,
-            );
+            )
+            .unwrap();
             println!();
         }
         let mut botsNames: Vec<String> = vec![];
-        for i in (0..self.bots.len()) {
+        for i in 0..self.bots.len() {
             botsNames.push(self.bots[i].name.clone());
         }
         let ans = Select::new("choose a bot to play with:", botsNames.clone())
             .prompt()
             .expect("Error");
-        for i in (0..botsNames.len()) {
+        for i in 0..botsNames.len() {
             if self.bots[i].name == ans {
                 self.currentBot = i;
             }
@@ -114,10 +115,19 @@ impl TicTacToe {
 
             println!();
             self.board.print();
-            if self.checkWinner() { break }
+            if self.checkWinner() {
+                break;
+            }
 
-            let msgs = ["{bot} thinks over the move...", "{bot} is thinking about the next move...", "{bot} contemplates next move..."];
-            print!("{}", randElm!(msgs).replace("{bot}", &*self.bots[self.currentBot].name.to_string()));
+            let msgs = [
+                "{bot} thinks over the move...",
+                "{bot} is thinking about the next move...",
+                "{bot} contemplates next move...",
+            ];
+            print!(
+                "{}",
+                randElm!(msgs).replace("{bot}", &*self.bots[self.currentBot].name.to_string())
+            );
             flush();
 
             let botMove = (self.bots[self.currentBot]).play(&mut self.board);
@@ -126,7 +136,9 @@ impl TicTacToe {
             println!(" {} x {}", botMove.0 + 1, botMove.1 + 1);
             self.board.set(botMove, 'O');
             self.board.print();
-            if self.checkWinner() { break }
+            if self.checkWinner() {
+                break;
+            }
         }
     }
 
@@ -139,7 +151,8 @@ impl TicTacToe {
                     SetAttribute(Attribute::Bold),
                     Print("Congratulations! You have won!"),
                     ResetColor,
-                ).unwrap();
+                )
+                .unwrap();
                 println!();
                 return true;
             }
@@ -150,7 +163,8 @@ impl TicTacToe {
                     SetAttribute(Attribute::Bold),
                     Print("You've lost"),
                     ResetColor,
-                ).unwrap();
+                )
+                .unwrap();
                 println!();
                 return true;
             }
@@ -162,13 +176,16 @@ impl TicTacToe {
                         SetAttribute(Attribute::Bold),
                         Print("Tie!"),
                         ResetColor,
-                    ).unwrap();
+                    )
+                    .unwrap();
                     println!();
                     return true;
                 }
                 return false;
             }
-            _ => { return false; }
+            _ => {
+                return false;
+            }
         }
     }
 }

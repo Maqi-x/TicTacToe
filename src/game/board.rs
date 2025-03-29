@@ -5,11 +5,7 @@ pub struct Board([[char; 3]; 3]);
 
 impl Board {
     pub fn new() -> Board {
-        return Board([
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-        ]);
+        return Board([[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]);
     }
 
     pub fn isEmpty(&mut self) -> bool {
@@ -25,8 +21,8 @@ impl Board {
     }
 
     pub fn print(&mut self) {
-        for row in (0..3) {
-            for col in (0..3) {
+        for row in 0..3 {
+            for col in 0..3 {
                 if self.0[row][col] == 'O' {
                     print!(" {} ", "O".red());
                 } else if self.0[row][col] == 'X' {
@@ -47,8 +43,8 @@ impl Board {
     }
 
     pub fn isFull(&mut self) -> bool {
-        for row in (0..3) {
-            for col in (0..3) {
+        for row in 0..3 {
+            for col in 0..3 {
                 if self.0[row][col] == ' ' {
                     return false;
                 }
@@ -59,7 +55,7 @@ impl Board {
 
     pub fn checkWinner(&self) -> char {
         // Check rows and columns
-        for i in (0..3) {
+        for i in 0..3 {
             if self.0[i][0] != ' ' && self.0[i][0] == self.0[i][1] && self.0[i][1] == self.0[i][2] {
                 return self.0[i][0];
             }
@@ -83,8 +79,8 @@ impl Board {
 
     pub fn clone(&self) -> Board {
         let mut new = Board::new();
-        for row in (0..3) {
-            for col in (0..3) {
+        for row in 0..3 {
+            for col in 0..3 {
                 new.set((row, col), self.0[row][col]);
             }
         }

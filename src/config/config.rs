@@ -1,3 +1,2 @@
-struct GameSettingsSave {
-
-}
+#![allow(dead_code)]
+struct GameSettingsSave {}
