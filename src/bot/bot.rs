@@ -13,11 +13,10 @@ pub struct Bot {
 impl Bot {
     pub fn new(handler: Controller, name: String, description: String, level: i32) -> Bot {
         return Bot {
-            handler: handler,
-            name: name,
-            level: level,
-
-            description: description,
+            handler,
+            name,
+            level,
+            description,
         };
     }
 
