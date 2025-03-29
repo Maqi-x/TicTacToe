@@ -1,14 +1,12 @@
+use crate::game::*;
 use crossterm::{
+    cursor,
     event::{self, Event, KeyCode, KeyEvent, KeyEventKind},
-    terminal::{self as term, ClearType},
-    ExecutableCommand,
     queue,
     style::{Color, Print, ResetColor, SetForegroundColor},
-    cursor,
+    terminal::{self as term, ClearType},
 };
-use std::io::{self, stdout, Write};
-use colored::Styles::Clear;
-use crate::game::*;
+use std::io::{self, Write, stdout};
 
 pub fn getInput() -> io::Result<(char, char)> {
     term::enable_raw_mode()?;
@@ -43,7 +41,9 @@ pub fn getInput() -> io::Result<(char, char)> {
         stdout.flush()?;
 
         if let Event::Key(KeyEvent { code, kind, .. }) = event::read()? {
-            if kind != KeyEventKind::Press { continue }
+            if kind != KeyEventKind::Press {
+                continue;
+            }
 
             if let Some(_) = error {
                 if code == KeyCode::Enter {
@@ -61,7 +61,7 @@ pub fn getInput() -> io::Result<(char, char)> {
                     }
                     print!("{} ", c);
                 }
-                KeyCode::Char(c @ 'q') => {
+                KeyCode::Char(_c @ 'q') => {
                     queue!(stdout, Print("Exiting...\n"))?;
                     stdout.flush()?;
                     term::disable_raw_mode()?;
@@ -82,7 +82,9 @@ pub fn getInput() -> io::Result<(char, char)> {
             }
         }
 
-        if first.is_some() && second.is_some() { break }
+        if first.is_some() && second.is_some() {
+            break;
+        }
     }
 
     term::disable_raw_mode()?;
@@ -101,7 +103,8 @@ pub fn playerController(board: &mut Board) -> Point {
                 SetForegroundColor(Color::Red),
                 Print("\rInvalid move. Press Enter to retry."),
                 ResetColor,
-            ).expect("Error setting foreground color.");
+            )
+            .expect("Error setting foreground color.");
 
             io::stdout().flush().expect("Error flushing stdout.");
 
@@ -109,7 +112,9 @@ pub fn playerController(board: &mut Board) -> Point {
             loop {
                 if let Ok(true) = event::poll(Duration::from_millis(100)) {
                     if let Ok(Event::Key(event)) = event::read() {
-                        if event.code == KeyCode::Enter { break }
+                        if event.code == KeyCode::Enter {
+                            break;
+                        }
                     }
                 }
             }

@@ -1,12 +1,16 @@
+#![allow(non_snake_case)]
 use crate::game::*;
-use crate::game::board::*;
 
 // level 3 bot
 pub fn minimax(board: &mut Board) -> Point {
     pub fn score(board: &mut Board, isMaximizing: bool, depth: i32) -> i32 {
         let winner = board.checkWinner();
-        if winner == 'O' { return 10 - depth }
-        if winner == 'X' { return depth - 10 }
+        if winner == 'O' {
+            return 10 - depth;
+        }
+        if winner == 'X' {
+            return depth - 10;
+        }
         if board.isFull() {
             return 0; // Draw
         }
@@ -14,11 +18,14 @@ pub fn minimax(board: &mut Board) -> Point {
         let mut bestScore = if isMaximizing { i32::MIN } else { i32::MAX };
         let marker: char;
 
-        if isMaximizing { marker = 'O' }
-        else { marker = 'X' }
+        if isMaximizing {
+            marker = 'O'
+        } else {
+            marker = 'X'
+        }
 
-        for row in (0..3) {
-            for col in (0..3) {
+        for row in 0..3 {
+            for col in 0..3 {
                 if board.get((row, col)) == ' ' {
                     board.set((row, col), marker);
                     let currentScore = score(board, !isMaximizing, depth + 1);
@@ -40,8 +47,8 @@ pub fn minimax(board: &mut Board) -> Point {
     let mut bestScore = i32::MIN;
     let mut bestMove: Point = (0, 0);
 
-    for row in (0..3) {
-        for col in (0..3) {
+    for row in 0..3 {
+        for col in 0..3 {
             if board.get((row, col)) == ' ' {
                 board.set((row, col), BOT_MARKER);
                 let moveScore = score(board, false, 0);
