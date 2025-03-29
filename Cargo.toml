@@ -1,0 +1,10 @@
+[package]
+name = "TicTacToe"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+colored = "2.0"
+crossterm = "0.26.1"
+rand = "0.8"
+inquire = "0.7.1"
